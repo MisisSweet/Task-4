@@ -16,5 +16,6 @@ namespace WebApplication2.Class
         public DateTime DateRegistr { get; set; }
         public DateTime LastLogin { get; set; }
         public string Status { get; set; }
+
     }
 }
