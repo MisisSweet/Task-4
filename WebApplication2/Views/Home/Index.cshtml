@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Вход";
+}
+
+<div class="text-center border-warning border">
+    <h1 class="display-4">Вход</h1>
+</div>
+<div>
+    <form method="get">
+        <div class="form-group">
+            <label for="exampleInputLogin1">Логин</label>
+            <input type="text" class="form-control" id="exampleInputLogin1" aria-describedby="loginlHelp" placeholder="Введите логин">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Пароль</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Введите пароль">
+        </div>
+        <input id="Button1" class="btn btn-primary" type="button" value="Войти" asp-controller="LoginPageController" onclick="check"/>
+        <input type="button" id="btnRegistt" class="btn btn-primary" value="Регистрация" asp-controller="LoginPageController" asp-action="check"/>
+    </form>
+    <div>
+        @TempData["b"]
+    </div>
+</div>
