@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication2.Models;
+using WebApplication2.Utils;
 
 namespace WebApplication2.Controllers
 {
@@ -20,6 +21,8 @@ namespace WebApplication2.Controllers
 
         public IActionResult Index()
         {
+            ViewData["person"] = DBService.Instanse.GetUsers();
+            ViewData["loginUser"] = Person.LoginUser;
             return View();
         }
 
