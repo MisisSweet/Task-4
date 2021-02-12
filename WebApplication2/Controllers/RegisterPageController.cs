@@ -15,5 +15,10 @@ namespace WebApplication2.Controllers
 
             return View();
         }
+        public IActionResult onTapRegistr(string lastname, string firstname, string email, string login, string password)
+        {
+            DBService.Instanse.AddUser(lastname, firstname, email, login, password);
+            return Redirect("~/LoginPage");
+        }
     }
 }

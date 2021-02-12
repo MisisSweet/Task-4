@@ -44,12 +44,49 @@ namespace WebApplication2.Utils
                             row[5].ToString(),
                             row[6].ToString(),
                             DateTime.Parse(row[7].ToString()),
-                            DateTime.Parse(row[8].ToString()),
+                            row[8].ToString(),
                             int.Parse(row[9].ToString())));
 
                 Person.LoginUser = person;
+
+                SqlCommand sqlCommand = new SqlCommand($"UPDATE Information SET LastLogin ='{DateTime.Now.ToString("dd - MM - yyyy")}' where [IDInformation]={person.Information.ID}", new SqlConnection(_connectedString));
+                sqlCommand.Connection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlCommand.Connection.Close();
             }
             return isLogin;
+        }
+        public bool AddUser(string lastname, string firstname, string email, string login, string password)
+        {
+            //try
+            //{
+                string query = $"INSERT INTO [Authorization] ([Login], [Password]) VALUES ('{login}','{password}'); select max(IDAuthorization) from [Authorization]";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, _connectedString);
+                DataSet dst = new DataSet();
+                adapter.Fill(dst);
+
+                int Id = int.Parse(dst.Tables[0].Rows[0][0].ToString());
+                SqlCommand sqlCommand = new SqlCommand($"INSERT INTO Information (LastName, FirstName, Email, DateRegistr, IDAuthorization, IDStatus) VALUES ('{lastname}','{firstname}','{email}','{DateTime.Now.ToString("dd - MM - yyyy")}',{Id},0)", new SqlConnection(_connectedString)); ;
+                sqlCommand.Connection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlCommand.Connection.Close();
+            return true;
+            //}
+            //catch
+            //{
+             //   return false;
+            //}
+
+
+        }
+
+        internal static void updateStatus(int id, int value)
+        {
+            string query = $"update [Information] set IDStatus = {value} where IDInformation = {id}";
+            SqlCommand sqlCommand = new SqlCommand(query, new SqlConnection(_connectedString));
+            sqlCommand.Connection.Open();
+            sqlCommand.ExecuteNonQuery();
+            sqlCommand.Connection.Close();
         }
 
         //TODO доделать получение
@@ -73,7 +110,7 @@ namespace WebApplication2.Utils
                         row[5].ToString(),
                         row[6].ToString(),
                         DateTime.Parse(row[7].ToString()),
-                        DateTime.Parse(row[8].ToString()),
+                        row[8].ToString(),
                         int.Parse(row[9].ToString())));
                 persons.Add(person);
             }

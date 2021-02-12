@@ -16,15 +16,21 @@ namespace WebApplication2.Controllers
             string strParam = HttpContext.Request.Query["error"];
             if (!string.IsNullOrEmpty(strParam))
                 ViewData["error"] = "Введен неверный логин или пароль";
+            string strParam1 = HttpContext.Request.Query["block"];
+            if (!string.IsNullOrEmpty(strParam1))
+                ViewData["error"] = "Ваш аккаунт заблокирован";
             return View();
         }
         
         public IActionResult onTapLogin(string login, string password)
         {
-            Person person;
             if (DBService.Instanse.Login(login, password))
             {
-                ViewData["Error"] = "";
+                if (Person.LoginUser.Information.Status == 1)
+                {
+                    return RedirectToAction("Index", "LoginPage", new { block = true });
+                }
+                //ViewData["error"] = "";
                 return Redirect("~/Home");
             }
             else

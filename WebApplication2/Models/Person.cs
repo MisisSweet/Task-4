@@ -44,14 +44,17 @@ namespace WebApplication2.Models
         public DateTime LastLogin { get; set; }
         public int Status { get; set; }
 
-        public Information(int iD, string firstName, string lastName, string email, DateTime dateRegistr, DateTime lastLogin, int status)
+        public Information(int iD, string firstName, string lastName, string email, DateTime dateRegistr, string lastLogin, int status)
         {
             ID = iD;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
             DateRegistr = dateRegistr;
-            LastLogin = lastLogin;
+
+            DateTime dateTime;
+            DateTime.TryParse(lastLogin,out dateTime);
+            LastLogin = dateTime;
             Status = status;
         }
     }
