@@ -84,9 +84,31 @@ namespace WebApplication2.Controllers
                 }
             }
         }
-        public IActionResult onTapDelete(IList<SelectablePerson> model)
+        private void deleteStatus(int value, List<SelectablePerson> persons)
         {
-            HomeController.records = model as List<SelectablePerson>;
+            foreach (SelectablePerson person in persons)
+            {
+                if (person.IsSelected)
+                {
+                    DBService.deleteStatus(person.Information.ID, value);
+                }
+            }
+        }
+        public IActionResult onTapDelete(IList<SelectablePerson> items)
+        {
+            var userSelectedPerson = items.Where(m => m.IsSelected).ToList();
+            if (userSelectedPerson != null && userSelectedPerson.Any())
+            {
+                deleteStatus(1, userSelectedPerson);
+                bool isExit = false;
+                userSelectedPerson.ForEach(m =>
+                {
+                    isExit = m.ID == Person.LoginUser.ID;
+                });
+                if (isExit)
+                    return RedirectToAction("onTapExit", "Home");
+
+            }
 
             return RedirectToAction("Index", "Home");
         }

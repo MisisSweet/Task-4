@@ -79,7 +79,15 @@ namespace WebApplication2.Utils
 
 
         }
-
+        internal static void deleteStatus(int id, int value)
+        {
+            string query = $"DELETE FROM Information where IDAuthorization = {id};" +
+                $"DELETE FROM[Authorization] where IDAuthorization = {id}; ";
+            SqlCommand sqlCommand = new SqlCommand(query, new SqlConnection(_connectedString));
+            sqlCommand.Connection.Open();
+            sqlCommand.ExecuteNonQuery();
+            sqlCommand.Connection.Close();
+        }
         internal static void updateStatus(int id, int value)
         {
             string query = $"update [Information] set IDStatus = {value} where IDInformation = {id}";
