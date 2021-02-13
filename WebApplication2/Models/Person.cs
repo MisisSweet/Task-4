@@ -11,7 +11,10 @@ namespace WebApplication2.Models
         public int ID { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        
+        public string ShortDateRegistr { get { return Information.DateRegistr.ToShortDateString(); } }
+        public string ShortDateLastLogin { get { return Information.LastLogin.ToShortDateString(); } }
+
+
         public Information Information { get; set; }
         public string StringStatus { get
             {
@@ -31,31 +34,6 @@ namespace WebApplication2.Models
             Login = login;
             Password = password;
             Information = information;
-        }
-    }
-
-    public class Information
-    {
-        public int ID { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public DateTime DateRegistr { get; set; }
-        public DateTime LastLogin { get; set; }
-        public int Status { get; set; }
-
-        public Information(int iD, string firstName, string lastName, string email, DateTime dateRegistr, string lastLogin, int status)
-        {
-            ID = iD;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            DateRegistr = dateRegistr;
-
-            DateTime dateTime;
-            DateTime.TryParse(lastLogin,out dateTime);
-            LastLogin = dateTime;
-            Status = status;
         }
     }
 }

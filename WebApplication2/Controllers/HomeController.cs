@@ -15,9 +15,7 @@ namespace WebApplication2.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        private static bool allSelected = true;
-
-        private static List<Record> records = new List<Record>();
+        private static List<SelectablePerson> records = new List<SelectablePerson>();
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -26,34 +24,15 @@ namespace WebApplication2.Controllers
 
         public IActionResult Index()
         {
-            records = new List<Record>(); 
-            string strParam = HttpContext.Request.Query["all_select"];
-            if (!string.IsNullOrEmpty(strParam))
-            {
-                if (bool.Parse(strParam))
-                {
-                    ViewData["btn_text"] = "Снять все";
-                    HomeController.allSelected = true;
-                }
-                else
-                {
-                    ViewData["btn_text"] = "Выделить все";
-                    HomeController.allSelected = false;
-                }
-                
-            }
-            else
-            {
-                ViewData["btn_text"] = "Выделить все";
-                allSelected = false;
-            }
-
-            List<Person> users = DBService.Instanse.GetUsers();
             ViewData["loginUser"] = Person.LoginUser;
 
-            users.ForEach((user) => { records.Add(new Record(user,allSelected)); });
-            ViewData["records"] = records;
-            return View();
+            List<Person> persons = DBService.Instanse.GetUsers();
+
+
+            //use AutoMapper
+            return View(persons.Select(m => new SelectablePerson { Password = m.Password,ID=m.ID,Information=m.Information, Login = m.Login }).ToList());
+
+            //return View(records);
         }
 
         public IActionResult Privacy()
@@ -66,39 +45,55 @@ namespace WebApplication2.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        public IActionResult onTapBlock(List<Record> records)
+        [HttpPost]
+        public IActionResult onTapBlock(List<SelectablePerson> items)
         {
-            HomeController.records = records;
-            updateStatus(1);
-            return RedirectToAction("Index", "Home");
-        }
-        public IActionResult onTapUNBlock(List<Record> records)
-        {
-            HomeController.records = records;
-            updateStatus(0);
-            return RedirectToAction("Index", "Home");
-        }
-        private void updateStatus(int value)
-        {
-            foreach (Record record in records)
+            var userSelectedPerson = items.Where(m => m.IsSelected).ToList();
+            if (userSelectedPerson != null && userSelectedPerson.Any())
             {
-                if (record.select)
+                updateStatus(1,userSelectedPerson);
+                bool isExit = false;
+                userSelectedPerson.ForEach(m =>
                 {
-                    DBService.updateStatus(record.user.Information.ID, value);
+                    isExit = m.ID == Person.LoginUser.ID;
+                });
+                if(isExit)
+                    return RedirectToAction("onTapExit", "Home");
+
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+        public IActionResult onTapUNBlock(IList<SelectablePerson> items)
+        {
+            var userSelectedPerson = items.Where(m => m.IsSelected).ToList();
+            if (userSelectedPerson != null && userSelectedPerson.Any())
+            {
+                updateStatus(0, userSelectedPerson);
+            }
+
+            return RedirectToAction("Index", "Home", new { sel = items.Count });
+        }
+        private void updateStatus(int value,List<SelectablePerson> persons)
+        {
+            foreach (SelectablePerson person in persons)
+            {
+                if (person.IsSelected)
+                {
+                    DBService.updateStatus(person.Information.ID, value);
                 }
             }
         }
-        public IActionResult onTapDelete()
+        public IActionResult onTapDelete(IList<SelectablePerson> model)
         {
-            return RedirectToAction("Index","Home");
+            HomeController.records = model as List<SelectablePerson>;
+
+            return RedirectToAction("Index", "Home");
         }
         public IActionResult onTapExit()
         {
             return Redirect("~/LoginPage");
         }
-        public IActionResult onChange()
-        {
-            return RedirectToAction("Index", "Home", new { all_select = !HomeController.allSelected });
-        }
     }
+
 }
